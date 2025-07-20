@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (isDuplicate) {
       if (errorMsg) {
-        errorMsg.textContent = "This data already exists. Please review your input.";
+        errorMsg.textContent = "This note already exists. Please review your input.";
         errorMsg.style.display = "block";
       }
       return; // Stop the form submission if duplicate found
