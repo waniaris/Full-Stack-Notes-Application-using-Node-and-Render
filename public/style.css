@@ -27,6 +27,14 @@ li {
     margin: 5px 0;
     padding: 10px;
     border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+li.textContent {
+    flex-grow: 1;
+    text-align: left;
 }
 
 form {

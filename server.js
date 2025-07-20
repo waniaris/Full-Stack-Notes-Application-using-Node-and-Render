@@ -13,7 +13,8 @@ const PORT = 3001;
 // Middleware to parse incoming JSON requests
 app.use(express.json());
 
-// TODO:  Serve static files from the 'public' directory
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, "public")));
 
 // Define the path to the JSON file
 const dataFilePath = path.join(__dirname, "data.json");
@@ -32,7 +33,15 @@ const writeData = (data) => {
   fs.writeFileSync(dataFilePath, JSON.stringify(data, null, 2));
 };
 
-// TODO: Handle GET request at the root route
+// Handle GET request at the root route
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.htm"));
+});
+
+// Handle GET request at the root route
+app.get("/", (req, res) => {
+  res.send("Welcome to the simple Express app!");
+});
 
 // Handle GET request to retrieve stored data
 app.get("/data", (req, res) => {
@@ -47,6 +56,40 @@ app.post("/data", (req, res) => {
   currentData.push(newData);
   writeData(currentData);
   res.json({ message: "Data saved successfully", data: newData });
+});
+
+// Handle GET request to retrieve data by ID
+app.get("/data/:id", (req, res) => {
+  const data = readData();
+  const item = data.find((item) => item.id === req.params.id);
+  if (!item) {
+    return res.status(404).json({ message: "Data not found" });
+  }
+  res.json(item);
+});
+
+// Handle PUT request to update data by ID
+app.put("/data/:id", (req, res) => {
+  const currentData = readData();
+  const index = currentData.findIndex((item) => item.id === req.params.id);
+  if (index === -1) {
+    return res.status(404).json({ message: "Data not found" });
+  }
+  currentData[index] = { ...currentData[index], ...req.body };
+  writeData(currentData);
+  res.json({ message: "Data updated successfully", data: currentData[index] });
+});
+
+// Handle DELETE request to delete data by ID
+app.delete("/data/:id", (req, res) => {
+  const currentData = readData();
+  const index = currentData.findIndex((item) => item.id === req.params.id);
+  if (index === -1) {
+    return res.status(404).json({ message: "Data not found" });
+  }
+  const updatedData = currentData.filter((_, idx) => idx != index);
+  writeData(updatedData);
+  res.json({ message: "Data deleted successfully" });
 });
 
 // Handle POST request at the /echo route
